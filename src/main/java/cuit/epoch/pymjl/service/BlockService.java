@@ -35,4 +35,12 @@ public interface BlockService {
      * @return {@code List<Block>}
      */
     List<Block> getBlockChain();
+
+    /**
+     * 校验哈希合法性，粗略的定位前四位为0的情况合法
+     *
+     * @param hash 哈希
+     * @return boolean
+     */
+    boolean isValidHash(String hash);
 }

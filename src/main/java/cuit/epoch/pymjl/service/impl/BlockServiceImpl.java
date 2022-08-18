@@ -114,12 +114,8 @@ public class BlockServiceImpl implements BlockService {
             if (!hash.equals(newBlock.getHash())) {
                 throw new RuntimeException("新区块的hash无效: " + hash + " " + newBlock.getHash());
             }
-            if (!isValidHash(newBlock.getHash())) {
-                return false;
-            }
+            return isValidHash(newBlock.getHash());
         }
-
-        return true;
     }
 
     /**
@@ -128,7 +124,8 @@ public class BlockServiceImpl implements BlockService {
      * @param hash 哈希
      * @return boolean
      */
-    private boolean isValidHash(String hash) {
+    @Override
+    public boolean isValidHash(String hash) {
         return hash.startsWith("0000");
     }
 

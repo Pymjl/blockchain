@@ -2,6 +2,7 @@ package cuit.epoch.pymjl.controller;
 
 import cn.hutool.json.JSONUtil;
 import cuit.epoch.pymjl.service.BlockService;
+import cuit.epoch.pymjl.service.PowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class BlockChainController {
     @Autowired
     private BlockService blockService;
+    @Autowired
+    private PowService powService;
 
     @GetMapping("/list")
     public String scanBlocks() {
@@ -25,5 +28,10 @@ public class BlockChainController {
     @PostMapping("/create")
     public String createBlock() {
         return blockService.createGenesisBlock();
+    }
+
+    @GetMapping("/prove")
+    public String prove() {
+        return JSONUtil.toJsonPrettyStr(powService.prove());
     }
 }
