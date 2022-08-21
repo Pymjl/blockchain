@@ -2,6 +2,7 @@ package cuit.epoch.pymjl.service.impl;
 
 
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import cuit.epoch.pymjl.dao.BlockCache;
 import cuit.epoch.pymjl.entity.Block;
 import cuit.epoch.pymjl.entity.Transaction;
@@ -87,7 +88,8 @@ public class BlockServiceImpl implements BlockService {
      * @param newBlock 待添加的区块
      * @return boolean
      */
-    private boolean addBlock(Block newBlock) {
+    @Override
+    public boolean addBlock(Block newBlock) {
         //先对新区块的合法性进行校验
         if (isValidNewBlock(newBlock, blockCache.getLatestBlock())) {
             blockCache.getBlockChain().add(newBlock);
@@ -129,13 +131,8 @@ public class BlockServiceImpl implements BlockService {
         return hash.startsWith("0000");
     }
 
-    /**
-     * 验证整个区块链是否有效
-     *
-     * @param chain 链
-     * @return boolean
-     */
-    private boolean isValidChain(List<Block> chain) {
+    @Override
+    public boolean isValidChain(List<Block> chain) {
         Block block = null;
         Block lastBlock = chain.get(0);
         int currentIndex = 1;
@@ -150,5 +147,25 @@ public class BlockServiceImpl implements BlockService {
             currentIndex++;
         }
         return true;
+    }
+
+    @Override
+    public void replaceChain(List<Block> newBlocks) {
+        List<Block> localBlockChain = blockCache.getBlockChain();
+        List<Transaction> localpackedTransactions = blockCache.getPackedTransactions();
+        if (isValidChain(newBlocks) && newBlocks.size() > localBlockChain.size()) {
+            localBlockChain = newBlocks;
+            //替换已打包保存的业务数据集合
+            localpackedTransactions.clear();
+            localBlockChain.forEach(block -> {
+                localpackedTransactions.addAll(block.getTransactions());
+            });
+            blockCache.setBlockChain(localBlockChain);
+            blockCache.setPackedTransactions(localpackedTransactions);
+            System.out.println("替换后的本节点区块链：" + JSON.toJSONString(blockCache.getBlockChain()));
+        } else {
+            System.out.println("接收的区块链无效");
+        }
+
     }
 }

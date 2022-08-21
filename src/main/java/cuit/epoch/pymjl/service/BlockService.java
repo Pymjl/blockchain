@@ -43,4 +43,27 @@ public interface BlockService {
      * @return boolean
      */
     boolean isValidHash(String hash);
+
+    /**
+     * 添加区块到区块链中
+     *
+     * @param newBlock 待添加的区块
+     * @return boolean
+     */
+    boolean addBlock(Block newBlock);
+
+    /**
+     * 验证整个区块链是否有效
+     *
+     * @param chain 链
+     * @return boolean
+     */
+    boolean isValidChain(List<Block> chain);
+
+    /**
+     * 替换本地区块链
+     *
+     * @param newBlocks 最新的区块链
+     */
+    void replaceChain(List<Block> newBlocks);
 }

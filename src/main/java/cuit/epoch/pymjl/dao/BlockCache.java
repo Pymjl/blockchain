@@ -3,11 +3,11 @@ package cuit.epoch.pymjl.dao;
 import cuit.epoch.pymjl.entity.Block;
 import cuit.epoch.pymjl.entity.Transaction;
 import lombok.Data;
+import org.java_websocket.WebSocket;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.net.http.WebSocket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 

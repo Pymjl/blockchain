@@ -1,10 +1,14 @@
 package cuit.epoch.pymjl.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import cuit.epoch.pymjl.constant.BlockConstant;
 import cuit.epoch.pymjl.dao.BlockCache;
 import cuit.epoch.pymjl.entity.Block;
+import cuit.epoch.pymjl.entity.Message;
 import cuit.epoch.pymjl.entity.Transaction;
 import cuit.epoch.pymjl.service.BlockService;
 import cuit.epoch.pymjl.service.PowService;
+import cuit.epoch.pymjl.service.SocketService;
 import cuit.epoch.pymjl.utils.CommonUtil;
 import cuit.epoch.pymjl.utils.CryptoUtil;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,8 @@ public class PowServiceImpl implements PowService {
     BlockCache blockCache;
     @Resource
     BlockService blockService;
+    @Resource
+    SocketService socketService;
 
     @Override
     public Block prove() {
@@ -52,11 +58,18 @@ public class PowServiceImpl implements PowService {
                 System.out.println("挖矿耗费时间：" + (System.currentTimeMillis() - start) + "ms");
                 break;
             }
-            System.out.println("第" + (nonce + 1) + "次尝试计算的hash值：" + newBlockHash);
+//            System.out.println("第" + (nonce + 1) + "次尝试计算的hash值：" + newBlockHash);
             nonce++;
         }
         // 创建新的区块
         Block block = blockService.createNewBlock(nonce, blockCache.getLatestBlock().getHash(), newBlockHash, tsaList);
+
+        //创建成功后，全网广播出去
+        Message msg = new Message();
+        msg.setType(BlockConstant.RESPONSE_LATEST_BLOCK);
+        msg.setData(JSON.toJSONString(block));
+        socketService.broadcast(JSON.toJSONString(msg));
+
         return block;
     }
 }
